@@ -66,7 +66,7 @@ void execute(ins)
 {
   int opCode = ins >> 24;
   int immediate = SIGN_EXTEND(IMMEDIATE(ins));
-  int val1,val2,val3,tmp;
+  int val1, val2, val3, tmp;
 
   switch (opCode)
   {
@@ -77,29 +77,29 @@ void execute(ins)
     push(immediate);
 
   case ADD:
-     val1 = pop();
-     val2 = pop();
-     val3 = val1 + val2;
+    val1 = pop();
+    val2 = pop();
+    val3 = val1 + val2;
     push(val3);
     break;
 
   case SUB:
-     val2 = pop();
-     val1 = pop();
-     val3 = val1 - val2;
+    val2 = pop();
+    val1 = pop();
+    val3 = val1 - val2;
     push(val3);
     break;
 
   case MUL:
-     val1 = pop();
+    val1 = pop();
     val2 = pop();
     val3 = val1 * val2;
     push(val3);
     break;
 
   case DIV:
-     val2 = pop();
-     val1 = pop();
+    val2 = pop();
+    val1 = pop();
     if (val2 == 0)
     {
       perror("Division by Zero!\n");
@@ -107,14 +107,14 @@ void execute(ins)
     }
     else
     {
-       val3 = val1 / val2;
+      val3 = val1 / val2;
       push(val3);
     }
     break;
 
   case MOD:
-     val2 = pop();
-     val1 = pop();
+    val2 = pop();
+    val1 = pop();
     if (val2 == 0)
     {
       perror("Division by Zero!\n");
@@ -122,13 +122,12 @@ void execute(ins)
     }
     else
     {
-       val3 = val1 % val2;
+      val3 = val1 % val2;
       push(val3);
     }
     break;
 
   case RDINT:
-     tmp;
     printf("Insert a Numberr please!\n");
     scanf("%d", tmp);
     printf("Die Zahl, die Sie eingegeben haben, war %d" + tmp);
@@ -136,21 +135,21 @@ void execute(ins)
     break;
 
   case WRINT:
-   tmp = pop();
-    printf("%d" + (int) tmp);
+    tmp = pop();
+    printf("%d" + (int)tmp);
     break;
 
   case RDCHR:
-    
+
     printf("Insert a Numberr please!\n");
     scanf("%d", tmp);
-    printf("Die Zahl, die Sie eingegeben haben, war %d"+ tmp);
+    printf("Die Zahl, die Sie eingegeben haben, war %d" + tmp);
     push(tmp);
     break;
 
   case WRCHR:
     tmp = pop();
-    printf("%c"+ (char)tmp);
+    printf("%c" + (char)tmp);
     break;
 
   default:
@@ -181,8 +180,16 @@ int main(int argc, char *argv[])
     }
     else if ((strcmp(argv[i], "1") == 0))
     {
-      program_memory = program_1;
-      printf("Test \n");
+      printf("Programm 1 strtet\n");
+      program_memory=program_1;
+    }
+    else if ((strcmp(argv[i], "1") == 0))
+    {
+      program_memory = program_2;
+    }
+    else if ((strcmp(argv[i], "1") == 0))
+    {
+      program_memory = program_3;
     }
     else
     {
