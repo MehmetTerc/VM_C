@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "instructions.h"
+#include <stdbool.h>
 #define MAXSIZE 100 // Größe des Stacks
 
 int sp = 0; //Stackpointer
@@ -9,6 +10,8 @@ int pc = 0; //Programmcounter
 unsigned int *program_memory;
 int stack[MAXSIZE];
 unsigned int ins;
+unsigned int counter;
+bool halt= false;
 
 unsigned int program_1[] = {
 
@@ -102,7 +105,7 @@ void execute(ins)
     val1 = pop();
     if (val2 == 0)
     {
-      perror("Division by Zero!\n");
+      perror("Division by Zero!!!\n");
       exit(1);
     }
     else
@@ -129,27 +132,27 @@ void execute(ins)
 
   case RDINT:
     printf("Insert a Numberr please!\n");
-    scanf("%d", tmp);
+    scanf("%d", &tmp);
     printf("Die Zahl, die Sie eingegeben haben, war %d" + tmp);
     push(tmp);
     break;
 
   case WRINT:
     tmp = pop();
-    printf("%d" + (int)tmp);
+    printf("%d" , tmp);
     break;
 
   case RDCHR:
 
     printf("Insert a Numberr please!\n");
-    scanf("%d", tmp);
-    printf("Die Zahl, die Sie eingegeben haben, war %d" + tmp);
+    scanf("%d", &tmp);
+    printf("Die Zahl, die Sie eingegeben haben, war %d" , tmp);
     push(tmp);
     break;
 
   case WRCHR:
     tmp = pop();
-    printf("%c" + (char)tmp);
+    printf("%c" , (char)tmp);
     break;
 
   default:
@@ -165,6 +168,7 @@ int main(int argc, char *argv[])
   {
     printf("Ninja Virtual Machine started\n");
     printf("Ninja Virtual Machine stopped\n");
+    exit(1);
   }
 
   for (int i = 1; i < argc; i++)
@@ -183,18 +187,24 @@ int main(int argc, char *argv[])
       printf("Programm 1 strtet\n");
       program_memory=program_1;
     }
-    else if ((strcmp(argv[i], "1") == 0))
+    else if ((strcmp(argv[i], "2") == 0))
     {
       program_memory = program_2;
     }
-    else if ((strcmp(argv[i], "1") == 0))
+    else if ((strcmp(argv[i], "3") == 0))
     {
       program_memory = program_3;
     }
     else
     {
-      printf("unknown command line argument '%s', try './njvm --help'\n" + (int)argv[i]);
+      printf("unknown command ! '%s', try './njvm --help'\n" + (int)argv[i]);
     }
+  }
+  while (!halt)
+  {
+    counter = program_memory[pc];
+    pc++;
+    execute(counter);
   }
 
   return 0;
