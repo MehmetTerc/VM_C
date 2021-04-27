@@ -58,7 +58,7 @@ void push(int i)
 int pop(void)
 {
   sp--;
-  return int tmp = stack[sp];
+  return stack[sp];
 }
 
 void add(void)

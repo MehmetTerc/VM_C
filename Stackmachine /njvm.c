@@ -2,6 +2,7 @@
 #include <string.h>
 #include "instructions.h"
 #include <stdbool.h>
+#include <stdlib.h>
 #define MAXSIZE 100 // Größe des Stacks
 
 int sp = 0; //Stackpointer
@@ -9,9 +10,9 @@ int pc = 0; //Programmcounter
 
 unsigned int *program_memory;
 int stack[MAXSIZE];
-unsigned int ins;
 unsigned int counter;
-bool halt= false;
+bool halt = false;
+
 
 unsigned int program_1[] = {
 
@@ -59,25 +60,36 @@ void push(int i)
 // Pop
 int pop(void)
 {
-  int val;
   sp--;
-  val = stack[sp];
-  return val;
+  return stack[sp];
 }
 
-void execute(ins)
+  void rdchr(void)
+{
+  char val;
+  printf("Insert a Character please!\n");
+  scanf("%c", &val);
+  push((int)val);
+}
+    
+
+
+void execute(unsigned int ins)
 {
   int opCode = ins >> 24;
   int immediate = SIGN_EXTEND(IMMEDIATE(ins));
   int val1, val2, val3, tmp;
+  char tmp111;
 
   switch (opCode)
   {
   case HALT:
+    halt = true;
     break;
 
   case PUSHC:
     push(immediate);
+    break;
 
   case ADD:
     val1 = pop();
@@ -131,28 +143,27 @@ void execute(ins)
     break;
 
   case RDINT:
-    printf("Insert a Numberr please!\n");
+    printf("Insert a Number please!\n");
     scanf("%d", &tmp);
-    printf("Die Zahl, die Sie eingegeben haben, war %d" + tmp);
+    printf("Die Zahl, die Sie eingegeben haben, war %d", tmp);
     push(tmp);
     break;
 
   case WRINT:
     tmp = pop();
-    printf("%d" , tmp);
+    printf("%d", tmp);
     break;
 
   case RDCHR:
-
-    printf("Insert a Numberr please!\n");
-    scanf("%d", &tmp);
-    printf("Die Zahl, die Sie eingegeben haben, war %d" , tmp);
-    push(tmp);
+    /*scanf("%c", &tmp111);
+    printf("Die Zahl, die Sie eingegeben haben, war %d", tmp111);
+    push((int)tmp111);*/
+    rdchr();
     break;
 
   case WRCHR:
     tmp = pop();
-    printf("%c" , (char)tmp);
+    printf("%c", (char)tmp);
     break;
 
   default:
@@ -166,14 +177,13 @@ int main(int argc, char *argv[])
 
   if (argc == 1)
   {
-    printf("Ninja Virtual Machine started\n");
-    printf("Ninja Virtual Machine stopped\n");
+    printf("Give Arguments!\n");
     exit(1);
   }
 
   for (int i = 1; i < argc; i++)
   {
-    printf("%d\n" + argc);
+    
     if (strcmp(argv[i], "--help") == 0)
     {
       printf("usage: ./njvm [option] [option] ...\n --version        show version and exit\n --help           show this help and exit\n");
@@ -182,24 +192,27 @@ int main(int argc, char *argv[])
     {
       printf("Ninja Virtual Machine version 0 (compiled April 18 2021, 16:34:52)\n");
     }
-    else if ((strcmp(argv[i], "1") == 0))
+    else if (strcmp(argv[i], "1") == 0)
     {
-      printf("Programm 1 strtet\n");
-      program_memory=program_1;
+      program_memory = program_1;
+      printf("Test1 \n");
     }
-    else if ((strcmp(argv[i], "2") == 0))
+    else if (strcmp(argv[i], "2") == 0)
     {
       program_memory = program_2;
+      printf("Test2 \n");
     }
-    else if ((strcmp(argv[i], "3") == 0))
+    else if (strcmp(argv[i], "3") == 0)
     {
       program_memory = program_3;
+      printf("Test3 \n");
     }
     else
     {
-      printf("unknown command ! '%s', try './njvm --help'\n" + (int)argv[i]);
+      printf("unknown command line argument '%s', try './njvm --help'\n", argv[i]);
     }
   }
+
   while (!halt)
   {
     counter = program_memory[pc];

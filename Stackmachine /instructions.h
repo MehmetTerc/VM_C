@@ -14,6 +14,12 @@
 #define WRINT 8
 #define RDCHR 9
 #define WRCHR 10
+#define PUSHG 11
+#define POPG 12
+#define ASF 13
+#define RSF 14
+#define PUSH1 15
+#define POP1 16
 
 // 2
 
