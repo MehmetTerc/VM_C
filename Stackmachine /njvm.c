@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include <string.h>
 #include "instructions.h"
+#include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #define MAXSIZE 100 // Größe des Stacks
@@ -23,6 +23,7 @@ unsigned int program_1[] = {
     (PUSHC << 24) | IMMEDIATE(6),
     (SUB << 24),
     (MUL << 24),
+    (WRINT << 24),
     (PUSHC << 24) | IMMEDIATE(10),
     (WRCHR << 24),
     (HALT << 24)};
@@ -79,7 +80,7 @@ void execute(unsigned int ins)
   int opCode = ins >> 24;
   int immediate = SIGN_EXTEND(IMMEDIATE(ins));
   int val1, val2, val3, tmp;
-  char tmp111;
+
 
   switch (opCode)
   {
@@ -145,7 +146,7 @@ void execute(unsigned int ins)
   case RDINT:
     printf("Insert a Number please!\n");
     scanf("%d", &tmp);
-    printf("Die Zahl, die Sie eingegeben haben, war %d", tmp);
+    printf("The inserted Number was %d\n", tmp);
     push(tmp);
     break;
 
@@ -195,30 +196,31 @@ int main(int argc, char *argv[])
     else if (strcmp(argv[i], "1") == 0)
     {
       program_memory = program_1;
-      printf("Test1 \n");
+      printf("Test 1 \n");
     }
     else if (strcmp(argv[i], "2") == 0)
     {
       program_memory = program_2;
-      printf("Test2 \n");
+      printf("Test 2 \n");
     }
     else if (strcmp(argv[i], "3") == 0)
     {
       program_memory = program_3;
-      printf("Test3 \n");
+      printf("Test 3 \n");
     }
     else
     {
       printf("unknown command line argument '%s', try './njvm --help'\n", argv[i]);
     }
   }
-
+  
+  printf("Ninja Virtual Machine started\n");
   while (!halt)
   {
     counter = program_memory[pc];
     pc++;
     execute(counter);
   }
-
+  printf("Ninja Virtual Machine stopped\n");
   return 0;
 }
