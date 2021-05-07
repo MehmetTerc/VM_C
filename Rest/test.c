@@ -1,9 +1,11 @@
- #include <stdio.h>
- // #define DEBUG
-int main(int argc, char *argv[]){
-#ifdef DEBUG    
-    printf("Error\n" );
-#endif
- printf("right \n");
-return 0;
-}
+#include <stdio.h>
+
+int main(int argc, char * argv[]) {
+     for (int i = 1; i < argc; i++)
+  {
+    
+    if (strcmp(argv[i], "--help") == 0)
+    {
+      printf("usage: ./njvm [option] [option] ...\n --version        show version and exit\n --help           show this help and exit\n");
+    }
+} }

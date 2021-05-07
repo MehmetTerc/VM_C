@@ -146,7 +146,6 @@ void execute(unsigned int ins)
   case RDINT:
     printf("Insert a Number please!\n");
     scanf("%d", &tmp);
-    printf("The inserted Number was %d\n", tmp);
     push(tmp);
     break;
 
@@ -156,9 +155,7 @@ void execute(unsigned int ins)
     break;
 
   case RDCHR:
-    /*scanf("%c", &tmp111);
-    printf("Die Zahl, die Sie eingegeben haben, war %d", tmp111);
-    push((int)tmp111);*/
+  
     rdchr();
     break;
 
