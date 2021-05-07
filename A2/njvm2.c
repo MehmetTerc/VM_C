@@ -3,7 +3,8 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#define MAXSIZE 100 // Größe des Stacks
+#define VERSION 2
+#define MAXSIZE 10000
 
 int sp = 0; //Stackpointer
 int pc = 0; //Programmcounter
@@ -12,7 +13,11 @@ unsigned int *program_memory;
 int stack[MAXSIZE];
 unsigned int counter;
 bool halt = false;
-
+char *file_Path;
+FILE *filePointer;
+char charNJBF[4];
+unsigned int *SDA;
+unsigned int FramePointer=0;
 
 
 
@@ -160,6 +165,58 @@ int main(int argc, char *argv[])
       printf("unknown command line argument '%s', try './njvm --help'\n", argv[i]);
     }
   }
+
+  file_Path =argv[argc-1];
+  if((filePointer = fopen(file_Path,"r")) == NULL){
+    perror("The File is not there!");
+    exit(1);
+  }
+
+  fread(charNJBF,sizeof(char),4,filePointer);
+  
+  if(strncmp(charNJBF,"NJBF",4)!=0){
+    perror("Wrong Directory! \n");
+    exit(1);
+  }
+  unsigned int version;
+
+  fread(&version,sizeof(unsigned int),1,filePointer);
+
+  if( version > VERSION){
+    perror("Wrong Version\n");
+    exit(1);
+  }
+
+  unsigned int instructionsSize;
+
+  fread(&instructionsSize,sizeof(unsigned int),1,filePointer);
+
+  program_memory=malloc(instructionsSize*sizeof(unsigned int));
+  
+  if(program_memory == NULL){
+    perror("program memory is empty\n");
+    exit(1);
+  }
+
+  unsigned int SDASize;
+
+  fread(&SDASize,sizeof(unsigned int),1,filePointer);
+
+  SDA=malloc(SDASize*sizeof(unsigned int));
+
+  if(SDA == NULL){
+    perror("SDA is Empty!\n");
+    exit(1);
+  }
+
+  fread(program_memory,sizeof(unsigned int),instructionsSize,filePointer);
+
+
+  
+
+
+
+
   
   printf("Ninja Virtual Machine started\n");
   while (!halt)
