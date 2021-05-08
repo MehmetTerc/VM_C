@@ -18,8 +18,8 @@
 #define POPG 12
 #define ASF 13
 #define RSF 14
-#define PUSH1 15
-#define POP1 16
+#define PUSHL 15
+#define POPL 16
 
 // 2
 

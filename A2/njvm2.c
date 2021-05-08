@@ -17,8 +17,7 @@ char *file_Path;
 FILE *filePointer;
 char charNJBF[4];
 unsigned int *SDA;
-unsigned int FramePointer=0;
-
+unsigned int FramePointer = 0;
 
 
 // Push
@@ -35,22 +34,19 @@ int pop(void)
   return stack[sp];
 }
 
-  void rdchr(void)
+void rdchr(void)
 {
   char val;
   printf("Insert a Character please!\n");
   scanf("%c", &val);
   push((int)val);
 }
-    
-
 
 void execute(unsigned int ins)
 {
   int opCode = ins >> 24;
   int immediate = SIGN_EXTEND(IMMEDIATE(ins));
   int val1, val2, val3, tmp;
-
 
   switch (opCode)
   {
@@ -125,13 +121,42 @@ void execute(unsigned int ins)
     break;
 
   case RDCHR:
-  
+
     rdchr();
     break;
 
   case WRCHR:
     tmp = pop();
     printf("%c", (char)tmp);
+    break;
+
+  case PUSHG:
+    push(SDA[immediate]);
+    break;
+
+  case POPG:
+    tmp = pop();
+    SDA[immediate] = tmp;
+    break;
+
+  case ASF:
+    push(FramePointer);
+    FramePointer = sp;
+    sp = sp + immediate;
+    break;
+
+  case RSF:
+    sp = FramePointer;
+    FramePointer = pop();
+    break;
+
+  case PUSHL:
+    push(stack[FramePointer + immediate]);
+    break;
+
+  case POPL:
+    tmp = pop();
+    stack[FramePointer + immediate] = tmp;
     break;
 
   default:
@@ -151,7 +176,7 @@ int main(int argc, char *argv[])
 
   for (int i = 1; i < argc; i++)
   {
-    
+
     if (strcmp(argv[i], "--help") == 0)
     {
       printf("usage: ./njvm [option] [option] ...\n --version        show version and exit\n --help           show this help and exit\n");
@@ -166,58 +191,56 @@ int main(int argc, char *argv[])
     }
   }
 
-  file_Path =argv[argc-1];
-  if((filePointer = fopen(file_Path,"r")) == NULL){
+  file_Path = argv[argc - 1];
+  if ((filePointer = fopen(file_Path, "r")) == NULL)
+  {
     perror("The File is not there!");
     exit(1);
   }
 
-  fread(charNJBF,sizeof(char),4,filePointer);
-  
-  if(strncmp(charNJBF,"NJBF",4)!=0){
+  fread(charNJBF, sizeof(char), 4, filePointer);
+
+  if (strncmp(charNJBF, "NJBF", 4) != 0)
+  {
     perror("Wrong Directory! \n");
     exit(1);
   }
   unsigned int version;
 
-  fread(&version,sizeof(unsigned int),1,filePointer);
+  fread(&version, sizeof(unsigned int), 1, filePointer);
 
-  if( version > VERSION){
+  if (version > VERSION)
+  {
     perror("Wrong Version\n");
     exit(1);
   }
 
   unsigned int instructionsSize;
 
-  fread(&instructionsSize,sizeof(unsigned int),1,filePointer);
+  fread(&instructionsSize, sizeof(unsigned int), 1, filePointer);
 
-  program_memory=malloc(instructionsSize*sizeof(unsigned int));
-  
-  if(program_memory == NULL){
+  program_memory = malloc(instructionsSize * sizeof(unsigned int));
+
+  if (program_memory == NULL)
+  {
     perror("program memory is empty\n");
     exit(1);
   }
 
   unsigned int SDASize;
 
-  fread(&SDASize,sizeof(unsigned int),1,filePointer);
+  fread(&SDASize, sizeof(unsigned int), 1, filePointer);
 
-  SDA=malloc(SDASize*sizeof(unsigned int));
+  SDA = malloc(SDASize * sizeof(unsigned int));
 
-  if(SDA == NULL){
+  if (SDA == NULL)
+  {
     perror("SDA is Empty!\n");
     exit(1);
   }
 
-  fread(program_memory,sizeof(unsigned int),instructionsSize,filePointer);
+  fread(program_memory, sizeof(unsigned int), instructionsSize, filePointer);
 
-
-  
-
-
-
-
-  
   printf("Ninja Virtual Machine started\n");
   while (!halt)
   {
