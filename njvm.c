@@ -314,23 +314,24 @@ void execute()
         }
         break;
     case JMP:
-        ProgramCounter = immediate;
+        pc = immediate;
         break;
     case BRF:
         if (pop() == false)
         {
-            ProgramCounter = immediate;
+            pc = immediate;
         }
         break;
     case BRT:
         if (pop() == true)
         {
-            ProgramCounter = immediate;
+            pc = immediate;
         }
         break;
     case CALL:
+        push(pc+1)
+        pc = immediate
         break;
-
     case RET:
         break;
     case DROP:
