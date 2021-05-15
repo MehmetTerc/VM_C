@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#define VERSION 3
+#define VERSION 4
 #define MAXSIZE 10000
 
 int sp = 0; //Stackpointer
@@ -18,9 +18,8 @@ FILE *filePointer;
 char charNJBF[4];
 unsigned int *SDA;
 unsigned int FramePointer = 0;
-int opCode;
+int opCode = 1;
 unsigned int SDASize;
-
 
 // Push
 void push(int i)
@@ -36,7 +35,7 @@ int pop(void)
     return stack[sp];
 }
 
-//Read out the full Stack
+//Write the full Stack
 void readStack()
 {
     printf("\t------Stack------\n");
@@ -58,6 +57,7 @@ void readStack()
     }
 }
 
+//Write the SDA
 void readSDA()
 {
 
@@ -67,6 +67,7 @@ void readSDA()
         printf("SDA[%d] -> %d\n", i, SDA[i]);
     }
 }
+
 //read a file
 void fileReader(int argc, char *argv[])
 {
@@ -119,6 +120,7 @@ void fileReader(int argc, char *argv[])
     fread(program_memory, sizeof(unsigned int), instructionsSize, filePointer);
 }
 
+//The Execution of the Ninja Compiler
 void execute()
 {
     unsigned int ins = program_memory[pc];
@@ -326,12 +328,26 @@ void execute()
             ProgramCounter = immediate;
         }
         break;
+    case CALL:
+        break;
+
+    case RET:
+        break;
+    case DROP:
+        break;
+    case PUSHR:
+        break;
+    case POPR:
+        break;
+    case DUP:
+        break;
     default:
         printf("Unbekannte Eingabe!\n");
         break;
     }
 }
 
+//The Debugger
 void debug()
 {
     int a;
@@ -353,11 +369,12 @@ void debug()
         debug();
         break;
     case 3:
+        printf("Ninja Virtual Machine started\n");
         while (opCode != HALT)
         {
-
             execute();
         }
+        printf("Ninja Virtual Machine stoped\n");
         break;
     case 4:
         printf("Ninja Virtual Machine stopped\n");
@@ -407,7 +424,13 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    printf("Wrong Format!\n");
+                    printf("teest\n");
+                    printf("Ninja Virtual Machine started\n");
+                    while (opCode != HALT)
+                    {
+                        execute();
+                    }
+                    printf("Ninja Virtual Machine stopped\n");
                 }
             }
             else
