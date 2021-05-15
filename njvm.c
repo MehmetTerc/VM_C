@@ -326,6 +326,16 @@ void execute()
             ProgramCounter = immediate;
         }
         break;
+    case RET:
+        break;
+    case DROP:
+        break;
+    case PUSHR:
+        break;
+    case POPR:
+        break;
+    case DUP:
+        break;                
     default:
         printf("Unbekannte Eingabe!\n");
         break;
