@@ -18,9 +18,8 @@ FILE *filePointer;
 char charNJBF[4];
 unsigned int *SDA;
 unsigned int FramePointer = 0;
-int opCode=1;
+int opCode = 1;
 unsigned int SDASize;
-
 
 // Push
 void push(int i)
@@ -341,7 +340,7 @@ void execute()
     case POPR:
         break;
     case DUP:
-        break;                
+        break;
     default:
         printf("Unbekannte Eingabe!\n");
         break;
@@ -371,7 +370,10 @@ void debug()
         break;
     case 3:
         printf("Ninja Virtual Machine started\n");
-        
+        while (opCode != HALT)
+        {
+            execute();
+        }
         printf("Ninja Virtual Machine stoped\n");
         break;
     case 4:
@@ -413,20 +415,21 @@ int main(int argc, char *argv[])
                     else
                     {
                         printf("Ninja Virtual Machine started\n");
-                        while(opCode != HALT)
+                        while (opCode != HALT)
                         {
                             execute();
                         }
                         printf("Ninja Virtual Machine stopped\n");
                     }
-                }else
+                }
+                else
                 {
                     printf("teest\n");
                     printf("Ninja Virtual Machine started\n");
-                        while(opCode != HALT)
-                        {
-                            execute();
-                        }
+                    while (opCode != HALT)
+                    {
+                        execute();
+                    }
                     printf("Ninja Virtual Machine stopped\n");
                 }
             }
