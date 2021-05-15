@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#define VERSION 2
+#define VERSION 3
 #define MAXSIZE 10000
 
 int sp = 0; //Stackpointer
@@ -18,43 +18,9 @@ FILE *filePointer;
 char charNJBF[4];
 unsigned int *SDA;
 unsigned int FramePointer = 0;
+int opCode;
+unsigned int SDASize;
 
-unsigned int program_1[] = {
-
-    (PUSHC << 24) | IMMEDIATE(3),
-    (PUSHC << 24) | IMMEDIATE(4),
-    (ADD << 24),
-    (PUSHC << 24) | IMMEDIATE(10),
-    (PUSHC << 24) | IMMEDIATE(6),
-    (SUB << 24),
-    (MUL << 24),
-    (WRINT << 24),
-    (PUSHC << 24) | IMMEDIATE(10),
-    (WRCHR << 24),
-    (HALT << 24)};
-
-unsigned int program_2[] = {
-
-    (PUSHC << 24) | IMMEDIATE(-2),
-    (RDINT << 24),
-    (MUL << 24),
-    (PUSHC << 24) | IMMEDIATE(3),
-    (ADD << 24),
-    (WRINT << 24),
-    (PUSHC << 24) | IMMEDIATE('\n'),
-    (WRCHR << 24),
-    (HALT << 24)
-
-};
-
-unsigned int program_3[] = {
-    (RDCHR << 24),
-    (WRINT << 24),
-    (PUSHC << 24) | IMMEDIATE('\n'),
-    (WRCHR << 24),
-    (HALT << 24)
-
-};
 
 // Push
 void push(int i)
@@ -70,19 +36,94 @@ int pop(void)
     return stack[sp];
 }
 
-void readStack(){
-    printf("------Stack------\n");
-    for(int i=sp;i>=0;i--){
-         if(sp==i){
-             printf("SP ->\n");
-         }else{
-        printf("Position: %d  Element %d\n", i ,stack[i]);
-         }
+//Read out the full Stack
+void readStack()
+{
+    printf("\t------Stack------\n");
+    for (int i = sp; i >= 0; i--)
+    {
+        if (sp == i)
+        {
+            printf("SP ->\n");
+        }
+        else if (FramePointer == i)
+        {
+            printf("FP ->");
+            printf("\tPosition: %d  Element %d\n", i, stack[i]);
+        }
+        else
+        {
+            printf("\tPosition: %d  Element %d\n", i, stack[i]);
+        }
     }
 }
-void execute(unsigned int ins)
+
+void readSDA()
 {
-    int opCode = ins >> 24;
+
+    printf("\t---SDA---\n");
+    for (int i = 0; i < SDASize; i++)
+    {
+        printf("SDA[%d] -> %d\n", i, SDA[i]);
+    }
+}
+//read a file
+void fileReader(int argc, char *argv[])
+{
+    file_Path = argv[1];
+    if ((filePointer = fopen(file_Path, "r")) == NULL)
+    {
+        perror("The File is not there!");
+        exit(1);
+    }
+
+    fread(charNJBF, sizeof(char), 4, filePointer);
+
+    if (strncmp(charNJBF, "NJBF", 4) != 0)
+    {
+        perror("Wrong Directory! \n");
+        exit(1);
+    }
+    unsigned int version;
+
+    fread(&version, sizeof(unsigned int), 1, filePointer);
+
+    if (version > VERSION)
+    {
+        perror("Wrong Version\n");
+        exit(1);
+    }
+
+    unsigned int instructionsSize;
+
+    fread(&instructionsSize, sizeof(unsigned int), 1, filePointer);
+
+    program_memory = malloc(instructionsSize * sizeof(unsigned int));
+
+    if (program_memory == NULL)
+    {
+        perror("program memory is empty\n");
+        exit(1);
+    }
+
+    fread(&SDASize, sizeof(unsigned int), 1, filePointer);
+
+    SDA = malloc(SDASize * sizeof(unsigned int));
+
+    if (SDA == NULL)
+    {
+        perror("SDA is Empty!\n");
+        exit(1);
+    }
+
+    fread(program_memory, sizeof(unsigned int), instructionsSize, filePointer);
+}
+
+void execute()
+{
+    unsigned int ins = program_memory[pc];
+    pc++;
+    opCode = ins >> 24;
     int immediate = SIGN_EXTEND(IMMEDIATE(ins));
     int val1, val2, val3, tmp;
     char cval;
@@ -291,133 +332,90 @@ void execute(unsigned int ins)
     }
 }
 
+void debug()
+{
+    int a;
+    printf("Debugger is started. Select an operation:\n");
+    printf("[0] Show the Stack [1] Show the SDA [2] Only the next Instruction [3] Execute all Instructions [4] Exit\n");
+    scanf("%d", &a);
+    switch (a)
+    {
+    case 0:
+        readStack();
+        debug();
+        break;
+    case 1:
+        readSDA();
+        debug();
+        break;
+    case 2:
+        execute();
+        debug();
+        break;
+    case 3:
+        while (opCode != HALT)
+        {
+
+            execute();
+        }
+        break;
+    case 4:
+        printf("Ninja Virtual Machine stopped\n");
+        exit(0);
+        break;
+    default:
+        printf("Please write a right number\n");
+        debug();
+    }
+}
+
 int main(int argc, char *argv[])
 {
 
-    if (argc == 1)
+    if (argc > 1)
     {
-        printf("Give Arguments!\n");
-        exit(1);
-    }
-
-    for (int i = 1; i < argc; i++)
-    {
-
-        if (strcmp(argv[i], "--help") == 0)
+        if (strcmp(argv[1], "--help") == 0)
         {
             printf("usage: ./njvm [option] [option] ...\n --version        show version and exit\n --help           show this help and exit\n");
         }
-        else if (strcmp(argv[i], "--version") == 0)
+        else if (strcmp(argv[1], "--version") == 0)
         {
             printf("Ninja Virtual Machine version 0 (compiled April 18 2021, 16:34:52)\n");
         }
-        else if (strcmp(argv[i], "1") == 0)
+        else if (strchr(argv[1], '.') != NULL)
         {
-            program_memory = program_1;
-            printf("Test 1 \n");
-        }
-        else if (strcmp(argv[i], "2") == 0)
-        {
-            program_memory = program_2;
-            printf("Test 2 \n");
-        }
-        else if (strcmp(argv[i], "3") == 0)
-        {
-            program_memory = program_3;
-            printf("Test 3 \n");
-        }
-        else if (strcmp(argv[i], "FILE") == 0)
-        {
-            program_memory = program_3;
-            printf("Test 3 \n");
-        }else if (strcmp(argv[i], "--debug") == 0)
-        {
-            int a;
-            printf("Debugger is started. Select an operation:\n");
-            printf("[0] Show the Stack [1] Show the SDA [2] Only the next Instruction [3] Execute all Instructions [4] Exit\n");
-            scanf("%d", &a);
-            switch (a)
+            char *tmp = strrchr(argv[1], '.');
+            if (strcmp(tmp + 1, "bin") == 0)
             {
-            case 0:
-            push(45);
-            push(37);
-            push(23);
-            push(13);
-            readStack();
-                break;
-            case 1:
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
-                break;
+
+                fileReader(argc, argv);
+                if (argc > 2)
+                {
+                    if (strcmp(argv[2], "--debug") == 0)
+                    {
+                        debug();
+                    }
+                    else
+                    {
+                        printf("Ninja Virtual Machine started\n");
+                        while (opCode != HALT)
+                        {
+                            execute();
+                        }
+                        printf("Ninja Virtual Machine stopped\n");
+                    }
+                }
+                else
+                {
+                    printf("Wrong Format!\n");
+                }
             }
-        }else
-        {
-            printf("unknown command line argument '%s', try './njvm --help'\n", argv[i]);
+            else
+            {
+                printf("unknown command line argument '%s', try './njvm --help'\n", argv[1]);
+            }
         }
+
+        return 0;
     }
-    /*
-    file_Path = argv[argc - 1];
-    if ((filePointer = fopen(file_Path, "r")) == NULL)
-    {
-        perror("The File is not there!");
-        exit(1);
-    }
-
-    fread(charNJBF, sizeof(char), 4, filePointer);
-
-    if (strncmp(charNJBF, "NJBF", 4) != 0)
-    {
-        perror("Wrong Directory! \n");
-        exit(1);
-    }
-    unsigned int version;
-
-    fread(&version, sizeof(unsigned int), 1, filePointer);
-
-    if (version > VERSION)
-    {
-        perror("Wrong Version\n");
-        exit(1);
-    }
-
-    unsigned int instructionsSize;
-
-    fread(&instructionsSize, sizeof(unsigned int), 1, filePointer);
-
-    program_memory = malloc(instructionsSize * sizeof(unsigned int));
-
-    if (program_memory == NULL)
-    {
-        perror("program memory is empty\n");
-        exit(1);
-    }
-
-    unsigned int SDASize;
-
-    fread(&SDASize, sizeof(unsigned int), 1, filePointer);
-
-    SDA = malloc(SDASize * sizeof(unsigned int));
-
-    if (SDA == NULL)
-    {
-        perror("SDA is Empty!\n");
-        exit(1);
-    }
-
-    fread(program_memory, sizeof(unsigned int), instructionsSize, filePointer);
-    */
-    printf("Ninja Virtual Machine started\n");
-    while (!halt)
-    {
-        ProgramCounter = program_memory[pc];
-        pc++;
-        execute(ProgramCounter);
-        
-    }
-    printf("Ninja Virtual Machine stopped\n");
-    return 0;
 }
