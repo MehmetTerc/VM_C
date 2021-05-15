@@ -3,7 +3,7 @@
 #include <string.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#define VERSION 3
+#define VERSION 4
 #define MAXSIZE 10000
 
 int sp = 0; //Stackpointer
@@ -36,7 +36,7 @@ int pop(void)
     return stack[sp];
 }
 
-//Read out the full Stack
+//Write the full Stack
 void readStack()
 {
     printf("\t------Stack------\n");
@@ -58,6 +58,7 @@ void readStack()
     }
 }
 
+//Write the SDA
 void readSDA()
 {
 
@@ -67,6 +68,7 @@ void readSDA()
         printf("SDA[%d] -> %d\n", i, SDA[i]);
     }
 }
+
 //read a file
 void fileReader(int argc, char *argv[])
 {
@@ -119,6 +121,7 @@ void fileReader(int argc, char *argv[])
     fread(program_memory, sizeof(unsigned int), instructionsSize, filePointer);
 }
 
+//The Execution of the Ninja Compiler
 void execute()
 {
     unsigned int ins = program_memory[pc];
@@ -342,6 +345,7 @@ void execute()
     }
 }
 
+//The Debugger
 void debug()
 {
     int a;
