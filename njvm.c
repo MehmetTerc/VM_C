@@ -329,6 +329,9 @@ void execute()
             ProgramCounter = immediate;
         }
         break;
+    case CALL:
+        break;
+
     case RET:
         break;
     case DROP:
@@ -418,6 +421,7 @@ int main(int argc, char *argv[])
                     }
                 }else
                 {
+                    printf("teest\n");
                     printf("Ninja Virtual Machine started\n");
                         while(opCode != HALT)
                         {
