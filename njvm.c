@@ -18,7 +18,7 @@ FILE *filePointer;
 char charNJBF[4];
 unsigned int *SDA;
 unsigned int FramePointer = 0;
-int opCode;
+int opCode=1;
 unsigned int SDASize;
 
 
@@ -367,11 +367,9 @@ void debug()
         debug();
         break;
     case 3:
-        while (opCode != HALT)
-        {
-
-            execute();
-        }
+        printf("Ninja Virtual Machine started\n");
+        
+        printf("Ninja Virtual Machine stoped\n");
         break;
     case 4:
         printf("Ninja Virtual Machine stopped\n");
@@ -412,16 +410,20 @@ int main(int argc, char *argv[])
                     else
                     {
                         printf("Ninja Virtual Machine started\n");
-                        while (opCode != HALT)
+                        while(opCode != HALT)
                         {
                             execute();
                         }
                         printf("Ninja Virtual Machine stopped\n");
                     }
-                }
-                else
+                }else
                 {
-                    printf("Wrong Format!\n");
+                    printf("Ninja Virtual Machine started\n");
+                        while(opCode != HALT)
+                        {
+                            execute();
+                        }
+                    printf("Ninja Virtual Machine stopped\n");
                 }
             }
             else
