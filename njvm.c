@@ -329,12 +329,15 @@ void execute()
         }
         break;
     case CALL:
-        push(pc+1)
-        pc = immediate
+        push(pc);
+        pc = immediate;
         break;
     case RET:
+        val1 = pop();
+        pc = val1;
         break;
     case DROP:
+        sp+=sp-immediate;
         break;
     case PUSHR:
         break;
