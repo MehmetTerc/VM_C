@@ -345,10 +345,10 @@ void execute()
         break;
     case POPR:
         RVR = pop();
-        
+
         break;
     case DUP:
-        val1=pop();
+        val1 = pop();
         push(val1);
         push(val1);
         break;
@@ -392,7 +392,7 @@ void debug()
         exit(0);
         break;
     case 5:
-        
+
     default:
         printf("Please write a right number\n");
         debug();
@@ -437,7 +437,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                  
+
                     printf("Ninja Virtual Machine started\n");
                     while (opCode != HALT)
                     {
