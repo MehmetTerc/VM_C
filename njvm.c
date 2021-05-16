@@ -20,6 +20,7 @@ unsigned int *SDA;
 unsigned int FramePointer = 0;
 int opCode = 1;
 unsigned int SDASize;
+unsigned int RVR;
 
 // Push
 void push(int i)
@@ -337,13 +338,19 @@ void execute()
         pc = val1;
         break;
     case DROP:
-        sp+=sp-immediate;
+        sp += sp - immediate;
         break;
     case PUSHR:
+        push(RVR);
         break;
     case POPR:
+        RVR = pop();
+        
         break;
     case DUP:
+        val1=pop();
+        push(val1);
+        push(val1);
         break;
     default:
         printf("Unbekannte Eingabe!\n");
@@ -384,6 +391,8 @@ void debug()
         printf("Ninja Virtual Machine stopped\n");
         exit(0);
         break;
+    case 5:
+        
     default:
         printf("Please write a right number\n");
         debug();
@@ -428,7 +437,7 @@ int main(int argc, char *argv[])
                 }
                 else
                 {
-                    printf("teest\n");
+                  
                     printf("Ninja Virtual Machine started\n");
                     while (opCode != HALT)
                     {
