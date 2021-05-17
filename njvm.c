@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #define VERSION 4
-#define MAXSIZE 10000
+#define MAXSIZE 100
 
 int sp = 0; //Stackpointer
 int pc = 0; //Programmcounter
@@ -338,14 +338,13 @@ void execute()
         pc = val1;
         break;
     case DROP:
-        sp += sp - immediate;
+        sp = sp - immediate;
         break;
     case PUSHR:
         push(RVR);
         break;
     case POPR:
         RVR = pop();
-
         break;
     case DUP:
         val1 = pop();
